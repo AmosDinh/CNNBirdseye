@@ -1,6 +1,24 @@
 from playwright.sync_api import sync_playwright
 
-
+def remove_all_background(page):
+    remove = ["#omnibox-singlebox",".scene-footer-container", '.app-bottom-content-anchor','#play','.scene-footer-container', '#watermark','#titlecard', '#image-header']
+    for selector in remove:
+        page.evaluate(f"""selector => document.querySelector(selector).style.display = "none" """, selector)
+        
+    
+    
+    
+    
+    # all buttons: display none
+    # buttons = page.query_selector_all('button')
+    # for button in buttons:
+    #     parent = button.query_selector('xpath=..')
+    #     # check if parent only has buttons as children
+    #     children = parent.query_selector_all('div')
+    #     if len(children) == 0:
+    #         page.evaluate(f"""element => element.style.display = "none" """, parent)
+    #     # page.evaluate(f"""element => element.style.display = "none" """, parent)
+        
 def get_pegman_background_position_y(page):
     minimap_div = page.query_selector('#minimap')
     pegman_div = minimap_div.query_selector("div[style*='rotating-1x.png']")
@@ -45,31 +63,27 @@ def mouse_drag_on_minimap(page, x_amount, y_amount):
     page.mouse.down()
     page.mouse.move(center_x+x_amount, center_y+y_amount)
     page.mouse.up()
+    minimap = page.query_selector('#minimap')
+    first_child = minimap.query_selector_all('xpath=child::*')[0]
+    second_child = first_child.query_selector_all('xpath=child::*')[1]
+    third_child = second_child.query_selector_all('xpath=child::*')[2]
+    fourth_child = second_child.query_selector_all('xpath=child::*')[3]
+    # displaynone
+    page.evaluate(f"""element => element.style.display = "none" """, third_child)
+    page.evaluate(f"""element => element.style.display = "none" """, fourth_child)
 
 def move_map_to_center(page):
     center_x = 110
     center_y = 110
     #map_ = page.locator('[aria-label="Interaktive Karte"]')
-    margin = 10
+    margin = 2
     while True:
         x, y = get_parent_parent_pegman_translate(page)
-        print(x)
         if abs(center_x-x)<margin and abs(center_y-y)<margin:
-            page.keyboard.up("ArrowLeft")
-            page.keyboard.up("ArrowRight")
-            page.keyboard.up("ArrowUp")
-            page.keyboard.up("ArrowDown")
             break
         # drag mouse
-        if x < center_x:
-            mouse_drag_on_minimap(page, center_x-x, 0)
-        elif x > center_x:
-            mouse_drag_on_minimap(page, center_x-x, 0)
-        
-        if y < center_y:
-            mouse_drag_on_minimap(page, 0, center_y-y)
-        elif y > center_y:
-            mouse_drag_on_minimap(page, 0, center_y-y)
+        if x < center_x or y < center_y or x > center_x or y > center_y:
+            mouse_drag_on_minimap(page, center_x-x, center_y-y)
         
     
         
@@ -123,7 +137,7 @@ def launch_google_maps():
         # write text in id="searchboxinput" and name="q"
         # click on button
         search_input_name = '[name="q"]'
-        page.type(search_input_name, 'Tokyo')
+        page.type(search_input_name, 'New York')
         accept_button_selector = '[aria-label="Suche"]'
         page.click(accept_button_selector)
         
@@ -144,7 +158,8 @@ def launch_google_maps():
         interaktive_karte_selector = '[aria-label="Interaktive Karte"]'
         interaktive_karte_element = page.locator(interaktive_karte_selector)
         interaktive_karte_element.hover()
-        
+        interaktive_karte_element.click()
+        page.wait_for_timeout(1000)
         for _ in range(6):
             page.click('[jsaction="minimap.zoom-in"]')
         page.click('[jsaction="minimap.zoom-out"]')
@@ -157,13 +172,16 @@ def launch_google_maps():
         #page.locator('[aria-label="Street View"]').click()
         #rotate_to(page, 0)
         # Wait for a while to let the page load (you can adjust the time based on your network speed)
+        remove_all_background(page)
         while True:
-            page.wait_for_timeout(5000)
+            page.wait_for_timeout(10000)
             move_map_to_center(page)
+            page.screenshot(path="google_maps6.png")
+            break
         page.wait_for_timeout(50000000)
 
         # Take a screenshot (optional)
-        page.screenshot(path="google_maps.png")
+        
 
         # Close the browser
         browser.close()
