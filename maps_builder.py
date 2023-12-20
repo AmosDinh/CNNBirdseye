@@ -119,8 +119,9 @@ def rotate_to(page, angle):
 import cv2
 import numpy as np 
 def click_on_interactive_street(page):  
+    
     page.click('[aria-label="Street View-Abdeckung anzeigen"]')
-   
+    page.wait_for_timeout(2000)
     # analyze the image, get all the walkable sections by color
     # read in the image as a numpy array
     blue_pixels = [0]
@@ -141,7 +142,7 @@ def click_on_interactive_street(page):
             blue_pixels = blue_pixels2
             break
         
-        page.wait_for_timeout(300)
+        page.wait_for_timeout(2000)
         
     if np.sum(blue_pixels) == 0:
         print('no blue pixels')
@@ -172,31 +173,34 @@ def click_on_interactive_street(page):
                 
         all_img_mask = np.array(np.where(blue_pixels==1))
 
-        # if at least one in lower_center_img_mask
-        if len(upper_center_img_mask) > 0:
-            # click on random pixel in lower_center_img_mask which has a blue pixel
-            random_indices_with_1 = np.random.choice(np.arange(len(upper_center_img_mask[0])))
-            random_indices_with_1 = upper_center_img_mask[:, random_indices_with_1]
-            
-        elif len(lower_center_img_mask) > 0:
-            random_indices_with_1 = np.random.choice(np.arange(len(lower_center_img_mask[0])))
-            random_indices_with_1 = lower_center_img_mask[:, random_indices_with_1]
-            
-        elif len(left_img_mask) > 0:
-            random_indices_with_1 = np.random.choice(np.arange(len(left_img_mask[0])))  
-            random_indices_with_1 = left_img_mask[:, random_indices_with_1]
-            
-        elif len(right_img_mask) > 0:
-            random_indices_with_1 = np.random.choice(np.arange(len(right_img_mask[0])))
-            random_indices_with_1 = right_img_mask[:, random_indices_with_1]
-        else:
-            random_indices_with_1 = np.random.choice(np.arange(len(all_img_mask[0])))
-            random_indices_with_1 = all_img_mask[:, random_indices_with_1]
+        # while '[jsaction="compass.needle"]' not visible/ not on page
+        while page.query_selector('[jsaction="compass.needle"]') == None:
+            # if at least one in lower_center_img_mask
+            if len(upper_center_img_mask) > 0:
+                # click on random pixel in lower_center_img_mask which has a blue pixel
+                random_indices_with_1 = np.random.choice(np.arange(len(upper_center_img_mask[0])))
+                random_indices_with_1 = upper_center_img_mask[:, random_indices_with_1]
+                
+            elif len(lower_center_img_mask) > 0:
+                random_indices_with_1 = np.random.choice(np.arange(len(lower_center_img_mask[0])))
+                random_indices_with_1 = lower_center_img_mask[:, random_indices_with_1]
+                
+            elif len(left_img_mask) > 0:
+                random_indices_with_1 = np.random.choice(np.arange(len(left_img_mask[0])))  
+                random_indices_with_1 = left_img_mask[:, random_indices_with_1]
+                
+            elif len(right_img_mask) > 0:
+                random_indices_with_1 = np.random.choice(np.arange(len(right_img_mask[0])))
+                random_indices_with_1 = right_img_mask[:, random_indices_with_1]
+            else:
+                random_indices_with_1 = np.random.choice(np.arange(len(all_img_mask[0])))
+                random_indices_with_1 = all_img_mask[:, random_indices_with_1]
 
-        # click on coordinate
-        x = random_indices_with_1[1]
-        y = random_indices_with_1[0]
-        page.mouse.click(int(x), int(y))
+            # click on coordinate
+            x = random_indices_with_1[1]
+            y = random_indices_with_1[0]
+            page.mouse.click(int(x), int(y))
+            page.wait_for_timeout(1000)
     
 def launch_google_maps():
     with sync_playwright() as p:
@@ -264,83 +268,117 @@ def launch_google_maps():
         page.type(search_input_name, 'New York')
         accept_button_selector = '[aria-label="Suche"]'
         page.click(accept_button_selector)
+        page.wait_for_timeout(2000)
         page.hover('[aria-labelledby="widget-minimap-icon-overlay"]')
         page.click('[jsaction="layerswitcher.quick.more"]')
+        5
         page.click('[jsaction="layerswitcher.intent.spherical"]')
         page.click('[jsaction="layerswitcher.close"]')
-        
-        
-            
-        page.wait_for_timeout(50000000)
         click_on_interactive_street(page)
         
-        viewport_size = page.viewport_size
-
-        # # Calculate the center coordinates
-        center_x = viewport_size["width"] / 2
-        center_x = 1.2 * center_x
-        center_y = viewport_size["height"] / 2
-        # move mouse to center
-        page.mouse.move(center_x, center_y)
-        # mouse wheel scroll in
-        page.mouse.wheel(0, 100)
+        page.wait_for_timeout(3000)
+        page.hover('canvas')
+        page.click('#widget-zoom-out')
+        # page.mouse.wheel(0, -1000)
+        # page.wait_for_timeout(2000)
         
+        # page.mouse.wheel(0, -1000)
+        # page.wait_for_timeout(2000)
         
-        # Get the dimensions of the viewport
-        # viewport_size = page.viewport_size
-
-        # # Calculate the center coordinates
-        # center_x = viewport_size["width"] / 2
-        # center_x = 1.2 * center_x
-        # center_y = viewport_size["height"] / 2
-
-        # # Click at the center of the screen
-        # page.mouse.click(center_x, center_y)
-        # interaktive_karte_selector = '[aria-label="Interaktive Karte"]'
-        # interaktive_karte_element = page.locator(interaktive_karte_selector)
-        # interaktive_karte_element.hover()
-        # interaktive_karte_element.click()
-        # page.wait_for_timeout(1000)
-        
-        # tilt.onTiltClick;mouseover:tilt.main;mouseout:tilt.main
-        
-        # for _ in range(6):
-        #     page.click('[jsaction="minimap.zoom-in"]')
+        # page.mouse.wheel(0, -1000)
+        # page.mouse.wheel(0, 1000)
+        # page.wait_for_timeout(2000)
+        # page.mouse.wheel(0, 1000)
+        # page.wait_for_timeout(2000)
+        import uuid
+        import datetime
+        def click_foto():
+            def screenshot(name):
+                
+                page.screenshot(path=name)
+                
+                
+            name = 'images/'+datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")+str(uuid.uuid4())
+            #remove_all_background(page)
+            page.click('[jsaction="compass.needle"]')  # face north
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '.scene-footer')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#watermark')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '.app-vertical-widget-holder')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#omnibox-container')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '[jsaction="focus:titlecard.main"]')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#minimap')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '[jsaction="imageheader.close"]')
+            page.evaluate(f"""selector => document.querySelector(selector).parentElement.style.opacity = 0 """, '[jsaction="imageheader.close"]')
+            
+            
+            page.wait_for_timeout(500)
+            screenshot(name+'_north.png')
+            page.click('[jsaction="compass.right"]')
+            page.wait_for_timeout(500)
+            screenshot(name+'_east.png')
+            
+            page.click('[jsaction="compass.right"]')
+            page.wait_for_timeout(500)
+            screenshot(name+'_south.png')
+            page.click('[jsaction="compass.right"]')
+            page.wait_for_timeout(500)
+            screenshot(name+'_west.png')
+            page.click('[jsaction="compass.needle"]')
+            page.wait_for_timeout(500)
+            #page.hover('canvas')
+            while page.query_selector('[aria-labelledby="widget-minimap-icon-overlay"]') == None:
+                page.click('#widget-zoom-out')
+                page.wait_for_timeout(1000)
+                
+            page.wait_for_timeout(2000)
+            #page.click('#widget-zoom-out')
+            steuerfeld = page.query_selector('[jsaction="drawer.close;mouseover:drawer.showToggleTooltip; mouseout:drawer.hideToggleTooltip;focus:drawer.showToggleTooltip;blur:drawer.hideToggleTooltip"]')
+            steuerfeld.click()
+            # opacity 0 using the steuerfeld handle
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '[aria-label="Seitliches Steuerfeld einblenden"]')
+            # opacity button 0
+            #page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '[jsaction="drawer.close;mouseover:drawer.showToggleTooltip; mouseout:drawer.hideToggleTooltip;focus:drawer.showToggleTooltip;blur:drawer.hideToggleTooltip"]')
+            # #vasquette opacity 0
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#vasquette')
+            # aria-label="Interaktive Karte" opacity 0
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#layer')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#minimap')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '.scene-footer')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '.widget-layer-shown')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#watermark')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '.app-vertical-widget-holder')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '[aria-label="Street View-Abdeckung anzeigen"]')
+            page.evaluate(f"""selector => document.querySelector(selector).style.opacity = 0 """, '#runway-expand-button')
+            
+           
             
             
             
-        # page.click('[jsaction="minimap.zoom-out"]')
-        # page.click('[jsaction="minimap.zoom-out"]')
-
-        # mouse wheel scroll in
+            #page.click('#tilt')
+            #page.wait_for_timeout(1000)
+            #page.hover('[aria-labelledby="widget-minimap-icon-overlay"]')
+            page.wait_for_timeout(2000)
+            page.click('[aria-labelledby="widget-minimap-icon-overlay"]')
+            page.wait_for_timeout(2000)
+            page.click('[aria-label="Street View-Abdeckung anzeigen"]')
+            page.click('[aria-label="Street View-Abdeckung anzeigen"]')
+            page.wait_for_timeout(700)
+            screenshot(name+'_bev.png')
+            page.click('[aria-label="Street View-Abdeckung anzeigen"]')
+            page.wait_for_timeout(500)
+            page.click('#widget-zoom-out')
+            page.wait_for_timeout(500)
+            page.click('#widget-zoom-out')
+            #page.wait_for_timeout(1000)
+            #page.click('#widget-zoom-out')
+            page.wait_for_timeout(1000)
+            click_on_interactive_street(page)
         
-
-        # while True:
-            
-        #     page.click('[jsaction="compass.needle"]')  # face north
-        #     page.click('[jsaction="compass.right"]')
-        #     page.click('[jsaction="compass.left"]')
-        
-        #get_parent_parent_pegman_translate(page)
-        #page.screenshot(path="google_maps1.png")
-        
-        
-         
-        
-        #page.locator('[aria-label="Street View"]').click()
-        #rotate_to(page, 0)
-        # Wait for a while to let the page load (you can adjust the time based on your network speed)
-        #remove_all_background(page)
-        # while True:
-        #     move_map_to_center(page)
-        #     #page.screenshot(path="google_maps6.png")
-            
+        while True:
+            click_foto()
         page.wait_for_timeout(50000000)
-
-        # Take a screenshot (optional)
         
-
-        # Close the browser
+        
         browser.close()
 
 if __name__ == "__main__":
