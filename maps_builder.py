@@ -201,16 +201,50 @@ def click_on_interactive_street(page):
 def launch_google_maps():
     with sync_playwright() as p:
         user_data_dir = '/home/amos/.config/google-chrome/Default/'
-   
+        #user_data_dir = 'Profile 1'
         # Launch the browser with the custom user data directory
-        browser = p.chromium.launch_persistent_context(
-            executable_path='/usr/bin/google-chrome',
-            headless=False,
-            #args=['---disable-blink-features=AutomationControlled',"--disable-dev-shm-usage",'--disable-component-extensions-with-background-pages'],
-            #args=browser_args,
-            ignore_default_args=['--enable-automation'],
-            user_data_dir=user_data_dir
-        )
+        # args = [
+            # '--disable-background-networking',
+            # '--no-sandbox',
+            # '--disable-setuid-sandbox',
+            # '--disable-infobars',#'--single-process',
+            
+            # '--no-zygote',
+            # '--no-first-run',
+            # '--window-position=0,0',
+            # '--ignore-certificate-errors',
+            # '--ignore-certificate-errors-skip-list',
+            # '--disable-dev-shm-usage',
+            # '--disable-accelerated-2d-canvas',
+            # '--disable-gpu',
+            # '--hide-scrollbars',
+            # '--disable-notifications',
+            # '--disable-background-timer-throttling',
+            # '--disable-backgrounding-occluded-windows',
+            # '--disable-breakpad',
+            # '--disable-component-extensions-with-background-pages',
+            # '--disable-extensions',
+            # '--disable-features=TranslateUI,BlinkGenPropertyTrees',
+            # '--disable-ipc-flooding-protection',
+            # '--disable-renderer-backgrounding',
+            # '--enable-features=NetworkService,NetworkServiceInProcess',
+            # '--force-color-profile=srgb',
+            # '--metrics-recording-only',
+        #     # '--mute-audio']
+        # browser = p.chromium.launch_persistent_context(
+        #     '/usr/bin/google-chrome',
+        #     #user_data_dir=user_data_dir,
+        #     headless=False,
+        #     args=['--profile-directory=Default'],
+        #     # args=args,
+        #     #
+        #     # args=['---disable-blink-features=AutomationControlled',"--disable-dev-shm-usage",'--disable-component-extensions-with-background-pages'],
+        #     #args=browser_args,
+        #     #ignore_default_args=False,#['--enable-automation'],
+        #     #user_data_dir=user_data_dir
+        #     #executable_path='/usr/bin/google-chrome',
+        # )
+        browser = p.chromium.launch(headless=False)#args=['--profile-directory=Default'])
 
         # Create a new page
         page = browser.new_page()
@@ -226,13 +260,18 @@ def launch_google_maps():
         accept_button_selector = '[aria-label="Alle akzeptieren"]'
         page.click(accept_button_selector)
         
-        # write text in id="searchboxinput" and name="q"
-        # click on button
         search_input_name = '[name="q"]'
         page.type(search_input_name, 'New York')
         accept_button_selector = '[aria-label="Suche"]'
         page.click(accept_button_selector)
+        page.hover('[aria-labelledby="widget-minimap-icon-overlay"]')
+        page.click('[jsaction="layerswitcher.quick.more"]')
+        page.click('[jsaction="layerswitcher.intent.spherical"]')
+        page.click('[jsaction="layerswitcher.close"]')
         
+        
+            
+        page.wait_for_timeout(50000000)
         click_on_interactive_street(page)
         
         viewport_size = page.viewport_size
