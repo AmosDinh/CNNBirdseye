@@ -6,7 +6,7 @@ def nothing(x):
     pass
  
 # Load image
-image = cv2.imread('google_maps2.png')
+image = cv2.imread('google_maps4.png')
 
 # Create a window
 cv2.namedWindow('image')
@@ -19,11 +19,17 @@ cv2.createTrackbar('VMin', 'image', 0, 255, nothing)
 cv2.createTrackbar('HMax', 'image', 0, 179, nothing)
 cv2.createTrackbar('SMax', 'image', 0, 255, nothing)
 cv2.createTrackbar('VMax', 'image', 0, 255, nothing)
-
+# (hMin = 92 , sMin = 9, vMin = 172), (hMax = 104 , sMax = 229, vMax = 243)
 # Set default value for Max HSV trackbars
-cv2.setTrackbarPos('HMax', 'image', 179)
-cv2.setTrackbarPos('SMax', 'image', 255)
-cv2.setTrackbarPos('VMax', 'image', 255)
+# cv2.setTrackbarPos('HMax', 'image', 179)
+# cv2.setTrackbarPos('SMax', 'image', 255)
+# cv2.setTrackbarPos('VMax', 'image', 255)
+cv2.setTrackbarPos('HMax', 'image', 107)
+cv2.setTrackbarPos('SMax', 'image', 229)
+cv2.setTrackbarPos('VMax', 'image', 243)
+cv2.setTrackbarPos('HMin', 'image', 92)
+cv2.setTrackbarPos('SMin', 'image', 9)
+cv2.setTrackbarPos('VMin', 'image', 172)
 
 # Initialize HSV min/max values
 hMin = sMin = vMin = hMax = sMax = vMax = 0
