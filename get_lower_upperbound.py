@@ -6,7 +6,7 @@ def nothing(x):
     pass
  
 # Load image
-image = cv2.imread('google_maps4.png')
+image = cv2.imread('images/2023122109351217490947cf4561-eccf-4e7a-9fa7-092779030c33_Palo_Alto_CA_bev.png')
 
 # Create a window
 cv2.namedWindow('image')
@@ -26,7 +26,7 @@ cv2.createTrackbar('VMax', 'image', 0, 255, nothing)
 # cv2.setTrackbarPos('VMax', 'image', 255)
 cv2.setTrackbarPos('HMax', 'image', 107)
 cv2.setTrackbarPos('SMax', 'image', 229)
-cv2.setTrackbarPos('VMax', 'image', 243)
+cv2.setTrackbarPos('VMax', 'image', 237)
 cv2.setTrackbarPos('HMin', 'image', 92)
 cv2.setTrackbarPos('SMin', 'image', 9)
 cv2.setTrackbarPos('VMin', 'image', 172)
