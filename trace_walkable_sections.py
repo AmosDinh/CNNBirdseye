@@ -2,16 +2,9 @@
 import cv2
 import numpy as np
 
-def get_minimap(img):
-    #x, y, width, height = 24, 482, 214, 214
-    #minimap = img[y:y + height, x:x + width]
-    return img
 
-def trace_walkable_sections(image_path):
+def trace_walkable_sections(img, show):
     # Read the image
-    img = cv2.imread(image_path)
-    img = get_minimap(img)
-    
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     # Define lower and upper bounds for blue color (you may need to adjust these values)
@@ -47,13 +40,26 @@ def trace_walkable_sections(image_path):
     filtered_contours_mask = np.zeros_like(mask)
     cv2.drawContours(filtered_contours_mask, contours, -1, (255), thickness=cv2.FILLED)
     result_gray = cv2.bitwise_and(gray, gray, mask=filtered_contours_mask)
+    
+    # make it binary, either 0 or 1
+    result_gray[result_gray > 0] = 255
+    return result_gray
 
+    if show:
+        # Display results
+        cv2.imshow("mask", mask)
+        cv2.imshow("result", result)
+        cv2.imshow("gray", gray)
+        cv2.imshow("filtered_contours_mask", filtered_contours_mask)
+        cv2.imshow("result_gray", result_gray)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        # side_by_side = np.hstack((img, gray))
+        cv2.imshow("Side by Side", result_gray)
+        
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-    
-    # side_by_side = np.hstack((img, gray))
-    cv2.imshow("Side by Side", result_gray)
-    
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    
-trace_walkable_sections('images/20231221093425150346e5b50366-a123-42d3-9653-c34197c025a5_Palo_Alto_CA_bev.png')
+if __name__ == '__main__':
+    img = cv2.imread('images/2023122200522366008575122393-dd3a-42e7-a249-c6c2bc81ff9d_Palo_Alto_CA_bev.png')
+    trace_walkable_sections(img, show=True)

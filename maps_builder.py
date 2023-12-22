@@ -126,9 +126,9 @@ def click_on_interactive_street(page):
     # analyze the image, get all the walkable sections by color
     # read in the image as a numpy array
     blue_pixels = [0]
-    name = f"cache/google_maps_temp{str(uuid.uuid4())}.png"
-    while os.path.exists(name):
-        name = f"cache/google_maps_temp{str(uuid.uuid4())}.png"
+    name = f"cache/google_maps_temp.png"
+    #while os.path.exists(name):
+    #    name = f"cache/google_maps_temp{str(uuid.uuid4())}.png"
         
     for _ in range(5):
         
@@ -239,8 +239,8 @@ def launch_google_maps(search_input):
         click_on_interactive_street(page)
         
         page.wait_for_timeout(3000)
-        page.hover('canvas')
-        page.click('#widget-zoom-out')
+        #page.hover('canvas')
+        #page.click('#widget-zoom-out')
         # page.mouse.wheel(0, -1000)
         # page.wait_for_timeout(2000)
         
@@ -370,12 +370,12 @@ def launch_google_maps(search_input):
             page.wait_for_timeout(2000)
             page.click('[aria-label="Street View-Abdeckung anzeigen"]')
             page.click('[aria-label="Street View-Abdeckung anzeigen"]')
-            page.wait_for_timeout(700)
+            page.wait_for_timeout(1500)
             screenshot(name+'_bev.png')
             page.click('[aria-label="Street View-Abdeckung anzeigen"]')
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(1000)
             page.click('#widget-zoom-out')
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(1000)
             page.click('#widget-zoom-out')
             #page.wait_for_timeout(1000)
             #page.click('#widget-zoom-out')
@@ -383,29 +383,29 @@ def launch_google_maps(search_input):
             click_on_interactive_street(page)
             
         is_first_click = True
-        while True:
+        for _ in range(10):
             click_foto(is_first_click)
             is_first_click=False
-        page.wait_for_timeout(50000000)
-        
         
         browser.close()
-
+        
 if __name__ == "__main__":
     import threading
     # launch_google_maps(search_input='Palo Alto CA')
-    while True:
-        try: 
-            launch_google_maps(search_input='Palo Alto CA')
-        except:
-           pass
+    # while True:
+    #     try: 
+    #         launch_google_maps(search_input='Palo Alto CA')
+    #     except:
+    #        pass
         
-    # def worker(i):
-    #     print(f'Starting worker {i}')
-    #     launch_google_maps('San Francisco')
-    #     print(f'Finished worker {i}')
+    def worker(i):
+        print(f'Starting worker {i}')
+        launch_google_maps('Palo Alto CA')
+        print(f'Finished worker {i}')
 
-    # num_workers = 2  # Change this to the number of workers you want
+    num_workers = 1  # Change this to the number of workers you want
+    # start thread but kill it after 5 min
+
 
     # threads = []
     # for i in range(num_workers):
@@ -415,3 +415,20 @@ if __name__ == "__main__":
 
     # for t in threads:
     #     t.join()
+    def run_worker_with_timeout(i, timeout):
+        thread = threading.Thread(target=worker, args=(i,))
+        thread.start()
+        thread.join(timeout)  # Wait for the thread to finish or timeout
+        if thread.is_alive():
+            print(f"Worker {i} exceeded timeout, killing thread")
+            thread._stop()  # This method is considered unsafe, use with caution
+
+    num_workers = 1  # Change this to the number of workers you want
+    timeout = 300  # 5 minutes in seconds
+
+    while True:
+        try:
+            for i in range(num_workers):
+                run_worker_with_timeout(i, timeout)
+        except:
+            pass
