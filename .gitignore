@@ -1,2 +1,3 @@
 *.png
 *.png:Zone.Identifier
+!thumbnails/image*.png
