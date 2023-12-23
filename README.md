@@ -7,7 +7,7 @@ Example predictions on the validation set:
 ![Alt text](thumbnails/image-23.png)
 
 One task for autonomous driving is to extract the birds-eye view (BEV) given the visual input captured by the vehicles cameras. It can be used for navigation and path planning of the vehicle [Reiher, Lennart, Bastian Lampe, and Lutz Eckstein (2020)]:
-![BEV example ](image.png)
+![Alt text](thumbnails/image1.png)
 <br><br>
 Steps to the task:
 1. Crawling for 2000 Google-Street Views (2000*4 images, north, east, south west) and the overhead BEV from the map. 
