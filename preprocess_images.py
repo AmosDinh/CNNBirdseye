@@ -36,23 +36,3 @@ for bev_image in tqdm(bev_images):
             img = cv2.imread('images/' + direction_image)
             img = cv2.resize(img, (resize_width, resize_height), interpolation=cv2.INTER_AREA)
             cv2.imwrite(dataset_folder+'/' + direction_image, img)
-    
-    #
-
-    # for image in tqdm(os.listdir('images')):
-    #     if '_bev' in image:
-    #         try:
-    #             im = Image.open('images/' + image)
-    #             # coutn the number of black pixels
-    #             black = sum([1 for pixel in im.getdata() if pixel < (20, 20, 20)]) / len(im.getdata())
-    #             print('black ratio: ' + str(black))
-    #             total_count += 1
-    #             if black > 0.3:
-    #                 count += 1
-    #                 os.remove('images/' + image)
-    #         except PIL.UnidentifiedImageError:
-    #             print("error")
-    #             os.remove('images/' + image)
-            
-# print('total count: ' + str(total_count))
-# print('count: ' + str(count))
