@@ -2,7 +2,6 @@
 Example predictions on the validation set:
 ![Alt text](thumbnails/image-19.png)
 ![Alt text](thumbnails/image-20.png)
-![Alt text](thumbnails/image-21.png)
 ![Alt text](thumbnails/image-22.png)
 ![Alt text](thumbnails/image-23.png)
 
