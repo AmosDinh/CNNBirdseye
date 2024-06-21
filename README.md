@@ -11,7 +11,7 @@ One task for autonomous driving is to extract the birds-eye view (BEV) given the
 Steps to the task:
 1. Crawling for 2000 Google-Street Views (2000*4 images, north, east, south west) and the overhead BEV from the map. 
 2. Image augmentation steps
-3. Finetuning an image segmentation model, Deeplab-V3 []. 
+3. Finetuning an image segmentation model, Deeplab-V3 [https://arxiv.org/pdf/1706.05587]. 
 
 Training image augmentations include: flipping the BEV horizontally and vertically and realigning the input images accordingly (flipping and permutation). Also random contrast, gamma, brightness, blur and zoom is used. <br>
 Training example:
